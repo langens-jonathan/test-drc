@@ -17,6 +17,8 @@ services:
       VIRTUAL_HOST: hdfs-namenode.demo.big-data-europe.local
     env_file:
       - ./config/hadoop/hadoop.env
+    labels:
+      - "logging=true"
   resourcemanager:
     image: bde2020/hadoop-resourcemanager:1.0.0
     hostname: resourcemanager
@@ -28,6 +30,8 @@ services:
       VIRTUAL_PORT: 8088
     env_file:
       - ./config/hadoop/hadoop.env
+    labels:
+      - "logging=true"
   historyserver:
     image: bde2020/hadoop-historyserver:1.0.0
     hostname: historyserver
@@ -35,6 +39,8 @@ services:
       - ./data/hadoop/historyserver:/hadoop/yarn/timeline
     env_file:
       - ./config/hadoop/hadoop.env
+    labels:
+      - "logging=true"
   nodemanager:
     image: bde2020/hadoop-nodemanager:1.0.0
     hostname: nodemanager
@@ -44,11 +50,15 @@ services:
       VIRTUAL_HOST: hdfs-nodemanager.demo.big-data-europe.local
     env_file:
       - ./config/hadoop/hadoop.env
+    labels:
+      - "logging=true"
   datanode:
     image: bde2020/hadoop-datanode:1.0.0
     hostname: datanode
     env_file:
       - ./config/hadoop/hadoop.env
+    labels:
+      - "logging=true"
   filebrowser:
     image: bde2020/hdfs-filebrowser
     hostname: filebrowser
@@ -56,6 +66,8 @@ services:
       NAMENODE_HOST: namenode
       VIRTUAL_HOST: hue.demo.big-data-europe.local
       VIRTUAL_PORT: 8088
+    labels:
+      - "logging=true"
   master:
     image: bde2020/spark-master:1.5.1-hadoop2.6
     hostname: spark-master
@@ -65,6 +77,8 @@ services:
       VIRTUAL_PORT: 8080
     volumes:
       - ./data/spark-master:/data
+    labels:
+      - "logging=true"
   worker:
     image: bde2020/spark-worker:1.5.1-hadoop2.6
     links:
@@ -72,6 +86,8 @@ services:
     environment:
       VIRTUAL_HOST: spark-worker.demo.big-data-europe.local
       VIRTUAL_PORT: 8081
+    labels:
+      - "logging=true"
   demo:
     image: bde2020/demo-spark-sensor-data:2.0.0
     environment:
@@ -79,12 +95,16 @@ services:
       HDFS_URL: hdfs://namenode:8020
     links:
       - "master:spark-master"
+    labels:
+      - "logging=true"
   integratorui:
     image: bde2020/integrator-ui:latest
     volumes:
       - ./config/integrator:/app/config
     environment:
       VIRTUAL_HOST: demo.big-data-europe.local
+    labels:
+      - "logging=true"
   csswrapper:
     image: madnificent/demo-spark-sensor-data-integrator-css-wrapper
     ports:
@@ -112,18 +132,20 @@ services:
   ###
   # mu.semte.ch stack
   ###
-  monitor:
-    image: bde2020/pipeline-monitor-frontend:0.1.0
-    links:
-      - identifier:backend
-    environment:
-      VIRTUAL_HOST: monitor.demo.big-data-europe.local
+  # monitor:
+  #   image: bde2020/pipeline-monitor-frontend:0.1.0
+  #   links:
+  #     - identifier:backend
+  #   environment:
+  #     VIRTUAL_HOST: monitor.demo.big-data-europe.local
   identifier:
     image: semtech/mu-identifier:1.0.0
   dispatcher:
     image: semtech/mu-dispatcher:1.0.1
     volumes:
       - ./config:/config
+    labels:
+      - "logging=true"
   database:
     image: tenforce/virtuoso:1.0.0-virtuoso7.2.2
     environment:
@@ -133,10 +155,12 @@ services:
       VIRTUAL_PORT: 8890
     volumes:
       - ./data/db:/data
-  pipeline:
-    image: bde2020/mu-pipeline-service:0.1.0
-  initdaemon:
-    image: bde2020/mu-init-daemon-service:0.1.0
+    labels:
+      - "logging=true"
+  # pipeline:
+  #   image: bde2020/mu-pipeline-service:0.1.0
+  # initdaemon:
+  #   image: bde2020/mu-init-daemon-service:0.1.0
 # networks:
 #   default:
 #     driver: overlay
